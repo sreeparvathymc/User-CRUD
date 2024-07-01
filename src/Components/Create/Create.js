@@ -14,6 +14,8 @@ const Create = () => {
   const navigate = useNavigate()
 
 
+  
+
   const validateForm =()=>{
     if(!title || !category ||!description ||!price ){
       toast.error("All fields are Required")
