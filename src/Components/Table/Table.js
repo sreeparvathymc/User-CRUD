@@ -22,18 +22,35 @@ const Table = () => {
 
   const deletePost = (index) => {
     const newpost = [...posts];
+    alert("want to Delete")
     newpost.splice(index, 1);
+    // const deletedPost = newPost.splice(index,1)[0]
     setPosts(newpost);
 
-    setTimeout(()=>{
-      // alert("Post Deleted Sucessfully")
-            toast.success("Delete Product")
+    
+
+    
+            // toast.success("Product Deleted",
+            // {
+            //   position: "top-right",
+            //   autoClose: 2000,
+            // })
 
 
-      // toast.success("Delete Product",{
-      //   onclose:()=> toast.dismiss("delete Product")
-      // toast.success("Post Deleted")
-    },2000);
+
+    // setTimeout(()=>{
+      // alert("Want to delete")
+            // toast.success("Delete Product")
+
+            // toast.success("Product Deleted"),
+            // {
+              // position: "top-right",
+            // }
+
+  //     // toast.success("Delete Product",{
+  //     //   onclose:()=> toast.dismiss("delete Product")
+  //     // toast.success("Post Deleted")
+    // },2000);
   };
 
 // =========================================================================================================

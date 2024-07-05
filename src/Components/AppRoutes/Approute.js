@@ -17,7 +17,6 @@ const Approute = () => {
 
         <Route path="/edit/:id" element={<Edit />}></Route>
 
-        {/* <Route path='/view' element={<View />}></Route> */}
       </Routes>
     </div>
   );

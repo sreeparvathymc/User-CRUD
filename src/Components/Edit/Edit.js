@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer,toast } from "react-toastify";
-
+import { ToastContainer, toast } from "react-toastify";
 
 const Edit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
-  const [newImage, setNewImage] = useState(null)
+  const [newImage, setNewImage] = useState(null);
+  const [newImageUrl, setNewImageUrl] = useState(null);
 
   useEffect(() => {
     fetch(`http://localhost:3000/products/${id}`)
@@ -20,11 +20,13 @@ const Edit = () => {
 
   if (!post) return <div>Loading...</div>;
 
-
-
   const handleUpdate = (e) => {
     e.preventDefault();
 
+    const updatedPost = { ...post };
+    if (newImageUrl) {
+      updatedPost.images = [newImageUrl];
+    }
 
     // const formData = new FormData();
     // formData.append('title', post.title);
@@ -34,7 +36,6 @@ const Edit = () => {
     // if (newImage){
     //   formData.append('image', post.newImage)
     // }
-
 
     // fetch('http://localhost:3000/products/${id}',
     //   {
@@ -54,33 +55,22 @@ const Edit = () => {
 
     // })
 
-
-
-
-
-
     fetch(`http://localhost:3000/products/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(post),
+      body: JSON.stringify(updatedPost),
     })
       .then((response) => response.json())
       .then((updatedPost) => {
         console.log("updated post", updatedPost);
-        toast.success("Updated Sucessfully")
+        toast.success("Updated Sucessfully");
 
-        setTimeout(()=>{
-        navigate("/");
-        },2000)
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
       });
-
-
-
-
-
-
   };
 
   const handleChange = (e) => {
@@ -93,22 +83,33 @@ const Edit = () => {
     setPost({ ...post, [name]: value });
   };
 
-  const handleFileChange=(e)=>{
-    setNewImage(e.target.files[0])
-  }
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setNewImage(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setNewImageUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
+
+    // setNewImage(e.target.files[0])
+  };
 
   // =======================================
   // =======================================
   // =======================================
   return (
     <div>
-      <ToastContainer className="top-4"/>
+      <ToastContainer className="top-4" />
       <div className="w-11/12 mx-auto form-container mt-20">
         <form onSubmit={handleUpdate}>
           <div className="md:w-8/12 w-10/12 mx-auto py-10 px-6 border shadow-md rounded-lg">
             <h1 className="text-blue-700 text-2xl font-medium text-center mb-16">
               {post.title}
             </h1>
+
+
             <div className="flex justify-between gap-5 mb-4">
               <div className="w-1/2">
                 {/* name ------------------------*/}
@@ -121,11 +122,13 @@ const Edit = () => {
                 <input
                   name="title"
                   placeholder="Product Name"
-                  value={post.title}
+                  value={post.title || ""}
                   // onChange={(e)=>setPost({...post, price: e.target.value})}
                   onChange={handleFileChange}
                   className="bg-blue-50 w-full rounded-sm py-2 px-2 focus:outline-none focus:ring-0"
                 />
+
+
               </div>
               <div className="w-1/2">
                 {/* cT ------------------------*/}
@@ -180,35 +183,55 @@ const Edit = () => {
                 className="bg-blue-50 mb-4 rounded-sm py-2 px-2 focus:outline-none focus:ring-0"
               />
             </div>
-
+            {/* Image ------------------------ */}
 
             <div className="mb-4">
-              <label htmlFor="image" className="font-medium text-blue-500 mr-3">Current image</label>
-             
-              {post.images && post.images[0]&&(
-                <img src={post.images[0]} alt="current product" className="w-32 h-32 object-cover mb-2"/>
+              <div className="py-2 px-2 flex justify-between items-center border-2 border-gray-500 border-dashed">
+                <div className="">
+                  <input
+                    type="file"
+                    id="image"
+                    onChange={handleFileChange}
+                    placeholder="upload Image"
+                    className="border border-gray-600 py-2 px-3"
+                  />
+                </div>
 
-              )}
+                <div>
+                  <label
+                    htmlFor="image"
+                    className="font-medium text-blue-500 mr-3"
+                  >
+                    {newImageUrl ? "Updated Image" : "Image"}
+                  </label>
 
-            </div>
+                  {newImageUrl ? (
+                    <img
+                      src={newImageUrl}
+                      alt="Product img"
+                      className="w-80 h-80 object-cover"
+                    />
+                  ) : (
+                    post.images &&
+                    post.images[0] && (
+                      <img
+                        src={post.images[0]}
+                        alt="Product img"
+                        className="w-80 h-80 object-cover"
+                      />
+                    )
+                  )}
+                </div>
+              </div>
 
-            <div className="mb-10">
-            <input
-              type="file"
-              id="image"
-              onChange={handleChange}
-              placeholder="upload Image"
-              className="border border-gray-600 py-2 px-3"
-            />
-          </div>
-
-            <div className="">
-              <button
-                // type="submit"
-                className="bg-blue-700 text-white px-6 py-1 mr-5 rounded-sm"
-              >
-                Update
-              </button>
+              <div className="mt-10">
+                <button
+                  // type="submit"
+                  className="bg-blue-700 text-white px-6 py-1 mr-5 rounded-sm"
+                >
+                  Update
+                </button>
+              </div>
             </div>
           </div>
         </form>
